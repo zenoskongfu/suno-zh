@@ -14,6 +14,7 @@ export const library: Dictionary = {
 };
 export const creation: Dictionary = {
   Simple: '简单', Advanced: '高级', Sounds: '音效', Custom: '自定义',
+  Audio: '音频', Voice: '声音', Inspo: '灵感',
   Lyrics: '歌词', Styles: '风格', 'More Options': '更多选项', 'More options': '更多选项',
   'Advanced Options': '高级选项', 'Advanced options': '高级选项', 'Song Description': '歌曲描述',
   'Song description': '歌曲描述', 'Song Title': '歌曲标题', 'Song title': '歌曲标题', Title: '标题',

@@ -8,19 +8,24 @@ function onPage(element: Element, path: string) {
   const pathname = element.ownerDocument.location.pathname;
   return pathname === path || (path === '/me' && pathname.startsWith('/me/'));
 }
-const createRoots = new WeakMap<Document, { modes: Element; root: Element }>();
+// Cache positive and negative lookups for one synchronous processing batch.
+// Reset before the next task so SPA changes cannot leave a stale form boundary.
+const createRoots = new WeakMap<Document, Element | null>();
 function inCreateForm(element: Element) {
-  const cached = createRoots.get(element.ownerDocument);
-  if (cached?.modes.isConnected && cached.root.contains(cached.modes)) return cached.root.contains(element);
-  // Locate the smallest common ancestor of the mode selector and form inputs.
-  const modes = element.ownerDocument.querySelector('[role="tablist"][aria-label="Create form mode"]');
-  for (let root = modes?.parentElement; root && root !== element.ownerDocument.body; root = root.parentElement) {
-    if (root.querySelector('[aria-label="Lyrics editor"], [data-testid="create-form-styles-wrapper"],textarea')) {
-      createRoots.set(element.ownerDocument, { modes: modes!, root });
-      return root.contains(element);
+  const doc = element.ownerDocument;
+  if (!createRoots.has(doc)) {
+    let form: Element | null = null;
+    const modes = doc.querySelector('[role="tablist"][aria-label="Create form mode"]');
+    for (let root = modes?.parentElement; root && root !== doc.body; root = root.parentElement) {
+      if (root.querySelector('[aria-label="Lyrics editor"], [data-testid="create-form-styles-wrapper"]')) {
+        form = root;
+        break;
+      }
     }
+    createRoots.set(doc, form);
+    queueMicrotask(() => createRoots.delete(doc));
   }
-  return false;
+  return createRoots.get(doc)?.contains(element) ?? false;
 }
 function filterPopup(element: Element) {
   const popup = element.closest('[role="listbox"]');
@@ -41,7 +46,9 @@ function selectDictionary(element: Element): Dictionary | undefined {
   if (filterPopup(element)) return filters;
   if (contextMenuAction(element)) return menus;
   if (element.closest('[role="dialog"]') && isAction(element)) return dialogs;
-  if (onPage(element, '/create') && inCreateForm(element)) return creation;
+  // Suno keeps the same composer mounted on song and library routes too.
+  // Its semantic boundary, rather than the current URL, identifies the UI.
+  if (element.closest('[role="tablist"][aria-label="Create form mode"]') || inCreateForm(element)) return creation;
   if (onPage(element, '/me') && element.closest('button[role="combobox"][aria-label^="Filters"],button[aria-label="Create Playlist"],button[aria-label="New Playlist"],button[aria-label="New Workspace"]')) return library;
 }
 export const sunoAdapter: TranslationAdapter = {

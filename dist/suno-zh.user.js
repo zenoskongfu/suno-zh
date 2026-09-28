@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Suno 中文助手
 // @namespace    https://github.com/zenoskongfu/suno-zh
-// @version      0.1.0
+// @version      0.1.1
 // @description  Suno 常用创作界面汉化，可随时恢复英文，不翻译用户内容。
 // @author       zenoskongfu
 // @match        https://suno.com/*
@@ -197,6 +197,9 @@
     Advanced: "高级",
     Sounds: "音效",
     Custom: "自定义",
+    Audio: "音频",
+    Voice: "声音",
+    Inspo: "灵感",
     Lyrics: "歌词",
     Styles: "风格",
     "More Options": "更多选项",
@@ -327,16 +330,20 @@
   }
   var createRoots = /* @__PURE__ */ new WeakMap();
   function inCreateForm(element) {
-    const cached = createRoots.get(element.ownerDocument);
-    if (cached?.modes.isConnected && cached.root.contains(cached.modes)) return cached.root.contains(element);
-    const modes = element.ownerDocument.querySelector('[role="tablist"][aria-label="Create form mode"]');
-    for (let root = modes?.parentElement; root && root !== element.ownerDocument.body; root = root.parentElement) {
-      if (root.querySelector('[aria-label="Lyrics editor"], [data-testid="create-form-styles-wrapper"],textarea')) {
-        createRoots.set(element.ownerDocument, { modes, root });
-        return root.contains(element);
+    const doc = element.ownerDocument;
+    if (!createRoots.has(doc)) {
+      let form = null;
+      const modes = doc.querySelector('[role="tablist"][aria-label="Create form mode"]');
+      for (let root = modes?.parentElement; root && root !== doc.body; root = root.parentElement) {
+        if (root.querySelector('[aria-label="Lyrics editor"], [data-testid="create-form-styles-wrapper"]')) {
+          form = root;
+          break;
+        }
       }
+      createRoots.set(doc, form);
+      queueMicrotask(() => createRoots.delete(doc));
     }
-    return false;
+    return createRoots.get(doc)?.contains(element) ?? false;
   }
   function filterPopup(element) {
     const popup = element.closest('[role="listbox"]');
@@ -356,7 +363,7 @@
     if (filterPopup(element)) return filters;
     if (contextMenuAction(element)) return menus;
     if (element.closest('[role="dialog"]') && isAction(element)) return dialogs;
-    if (onPage(element, "/create") && inCreateForm(element)) return creation;
+    if (element.closest('[role="tablist"][aria-label="Create form mode"]') || inCreateForm(element)) return creation;
     if (onPage(element, "/me") && element.closest('button[role="combobox"][aria-label^="Filters"],button[aria-label="Create Playlist"],button[aria-label="New Playlist"],button[aria-label="New Workspace"]')) return library;
   }
   var sunoAdapter = {

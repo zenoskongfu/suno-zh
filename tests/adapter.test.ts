@@ -51,3 +51,21 @@ test('library subpage tabs are localized', async () => {
   start('<div role="tablist"><a role="tab" href="/me/playlists">Playlists</a><a role="tab" href="/me/workspaces">Workspaces</a></div>', '/me/playlists');
   await settle(); expect(document.body.textContent).toBe('播放列表工作区');
 });
+test.each(['/song/synthetic', '/me'])('embedded composer translates on %s without touching song content', async path => {
+  start('<section><span role="tablist" aria-label="Create form mode"><button role="tab" aria-label="Advanced">Advanced</button></span><button>Audio</button><button>Voice</button><button>Inspo</button><h2>Lyrics</h2><div role="textbox" aria-label="Lyrics editor" contenteditable="true">Audio Voice Inspo</div><div data-testid="create-form-styles-wrapper"><textarea>Styles</textarea></div><h2>Styles</h2><button>Create</button></section><article><h1>Audio</h1><p>Voice Inspo Lyrics</p><a href="/song/other">Create</a></article>', path);
+  await settle();
+  const section = document.querySelector('section')!;
+  expect([...section.querySelectorAll('button')].map(button => button.textContent)).toEqual(['高级', '音频', '声音', '灵感', '创作']);
+  expect([...section.querySelectorAll('h2')].map(heading => heading.textContent)).toEqual(['歌词', '风格']);
+  expect(document.querySelector('[contenteditable]')!.textContent).toBe('Audio Voice Inspo');
+  expect(document.querySelector('textarea')!.value).toBe('Styles');
+  expect(document.querySelector('article')!.textContent).toBe('AudioVoice Inspo LyricsCreate');
+  engine.setEnabled(false);
+  expect([...section.querySelectorAll('button')].map(button => button.textContent)).toEqual(['Advanced', 'Audio', 'Voice', 'Inspo', 'Create']);
+});
+test('mode tabs translate before the editor mounts without granting scope to unrelated content', async () => {
+  start('<section><span role="tablist" aria-label="Create form mode"><button role="tab" aria-label="Simple">Simple</button></span></section><article><h2>Lyrics</h2><textarea>Styles</textarea></article>', '/song/synthetic');
+  await settle();
+  expect(document.querySelector('button')!.textContent).toBe('简单');
+  expect(document.querySelector('article h2')!.textContent).toBe('Lyrics');
+});
