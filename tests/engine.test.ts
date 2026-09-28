@@ -45,10 +45,24 @@ test('small updates do not rescan a large song list', async () => {
   start('<button data-ui>Create</button>' + '<p data-user>Create</p>'.repeat(5000));
   await new Promise(resolve => setTimeout(resolve, 500));
   const before = engine.stats.visited;
-  const begin = performance.now();
+  const beforeMs = engine.stats.workMs;
   document.querySelector('button')!.firstChild!.nodeValue = 'Library'; await settle();
   const delta = engine.stats.visited - before;
   expect(delta).toBeLessThan(10);
   expect([...document.querySelectorAll('p')].every(el => el.textContent === 'Create')).toBe(true);
-  console.info(`5000 protected songs; small update visited ${delta} nodes; observation window ${(performance.now() - begin).toFixed(1)} ms`);
+  console.info(`5000 protected songs; small update visited ${delta} nodes; translation work ${(engine.stats.workMs - beforeMs).toFixed(2)} ms`);
+});
+test('detached nodes restore safely before reuse and can be translated again', async () => {
+  start('<button data-ui>Create</button>'); await settle();
+  const button = document.querySelector('button')!;
+  button.remove(); await settle(); expect(button.textContent).toBe('Create');
+  document.body.append(button); await settle(); expect(button.textContent).toBe('创建');
+  engine.setEnabled(false); expect(button.textContent).toBe('Create');
+});
+test('attribute changes preserve new website content and newly protected areas restore', async () => {
+  start('<section><button data-ui title="Create">Create</button></section>'); await settle();
+  const button = document.querySelector('button')!;
+  button.title = 'Library'; await settle(); expect(button.title).toBe('资料库');
+  document.querySelector('section')!.setAttribute('contenteditable', 'true'); await settle();
+  expect(button.textContent).toBe('Create'); expect(button.title).toBe('Library');
 });

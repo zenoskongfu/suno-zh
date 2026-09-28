@@ -32,9 +32,22 @@ test('context actions translate but arbitrary song labels stay intact', async ()
   await settle(); expect(document.querySelector('a')!.textContent).toBe('Download');
   expect(document.querySelector('button')!.textContent).toBe('下载');
 });
+test('a user item rendered as a button is not mistaken for library UI', async () => {
+  start('<button>Styles</button><div class="clip-title-wrapper"><button>Filters</button></div>');
+  await settle(); expect(document.body.textContent).toBe('StylesFilters');
+});
 test('input value is untouched; only known library placeholder is translated', async () => {
   start('<input placeholder="Search songs" value="Create"><button title="Filters">Filters</button>');
   await settle(); expect(document.querySelector('input')!.value).toBe('Create');
   expect(document.querySelector('input')!.placeholder).toBe('搜索歌曲');
   engine.setEnabled(false); expect(document.querySelector('input')!.placeholder).toBe('Search songs');
+});
+test('repurposing a navigation link as a song title restores the original text', async () => {
+  start('<a href="/create">Create</a>'); await settle();
+  const link = document.querySelector('a')!;
+  link.href = '/song/example'; await settle(); expect(link.textContent).toBe('Create');
+});
+test('library subpage tabs are localized', async () => {
+  start('<div role="tablist"><a role="tab" href="/me/playlists">Playlists</a><a role="tab" href="/me/workspaces">Workspaces</a></div>', '/me/playlists');
+  await settle(); expect(document.body.textContent).toBe('播放列表工作区');
 });

@@ -8,7 +8,8 @@
     "build": "node scripts/build.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "check": "npm run typecheck && npm test && npm run build"
+    "check": "npm run typecheck && npm test && npm run build",
+    "preview": "node scripts/preview.mjs"
   },
   "engines": {
     "node": ">=22"

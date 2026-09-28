@@ -4,7 +4,10 @@ const protectedSelector = 'script,style,noscript,textarea,pre,code,[contentedita
 const actionSelector = 'button,[role="button"],[role="tab"],[role="option"],[role="menuitem"],label,h1,h2,h3';
 const canonicalRoutes = new Set(['/discover', '/create', '/me', '/studio']);
 function isAction(element: Element) { return Boolean(element.closest(actionSelector)); }
-function onPage(element: Element, path: string) { return element.ownerDocument.location.pathname === path; }
+function onPage(element: Element, path: string) {
+  const pathname = element.ownerDocument.location.pathname;
+  return pathname === path || (path === '/me' && pathname.startsWith('/me/'));
+}
 const createRoots = new WeakMap<Document, { modes: Element; root: Element }>();
 function inCreateForm(element: Element) {
   const cached = createRoots.get(element.ownerDocument);
@@ -39,7 +42,7 @@ function selectDictionary(element: Element): Dictionary | undefined {
   if (contextMenuAction(element)) return menus;
   if (element.closest('[role="dialog"]') && isAction(element)) return dialogs;
   if (onPage(element, '/create') && inCreateForm(element)) return creation;
-  if (onPage(element, '/me') && isAction(element)) return library;
+  if (onPage(element, '/me') && element.closest('button[role="combobox"][aria-label^="Filters"],button[aria-label="Create Playlist"],button[aria-label="New Playlist"],button[aria-label="New Workspace"]')) return library;
 }
 export const sunoAdapter: TranslationAdapter = {
   isProtected(element) {

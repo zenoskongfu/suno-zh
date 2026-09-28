@@ -31,7 +31,7 @@
             for (const node of record.addedNodes) this.pending.add(node);
           } else this.pending.add(record.target);
         }
-        for (const node of this.edits.keys()) if (!node.isConnected) this.edits.delete(node);
+        for (const node of this.edits.keys()) if (!node.isConnected) this.restore(node);
         this.schedule();
       });
     }
@@ -43,7 +43,7 @@
     tasks = [];
     timer;
     enabled = false;
-    stats = { visited: 0, writes: 0, batches: 0 };
+    stats = { visited: 0, writes: 0, batches: 0, workMs: 0, maxBatchMs: 0 };
     setEnabled(enabled2) {
       if (enabled2 === this.enabled) return;
       this.enabled = enabled2;
@@ -102,6 +102,9 @@
         else if (next.value.isConnected) this.process(next.value);
         if (performance.now() - start >= 8) break;
       }
+      const elapsed = performance.now() - start;
+      this.stats.workMs += elapsed;
+      this.stats.maxBatchMs = Math.max(this.stats.maxBatchMs, elapsed);
       this.schedule();
     }
     read(node, key) {
@@ -319,7 +322,8 @@
     return Boolean(element.closest(actionSelector));
   }
   function onPage(element, path) {
-    return element.ownerDocument.location.pathname === path;
+    const pathname = element.ownerDocument.location.pathname;
+    return pathname === path || path === "/me" && pathname.startsWith("/me/");
   }
   var createRoots = /* @__PURE__ */ new WeakMap();
   function inCreateForm(element) {
@@ -353,7 +357,7 @@
     if (contextMenuAction(element)) return menus;
     if (element.closest('[role="dialog"]') && isAction(element)) return dialogs;
     if (onPage(element, "/create") && inCreateForm(element)) return creation;
-    if (onPage(element, "/me") && isAction(element)) return library;
+    if (onPage(element, "/me") && element.closest('button[role="combobox"][aria-label^="Filters"],button[aria-label="Create Playlist"],button[aria-label="New Playlist"],button[aria-label="New Workspace"]')) return library;
   }
   var sunoAdapter = {
     isProtected(element) {

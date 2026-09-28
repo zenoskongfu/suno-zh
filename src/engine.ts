@@ -11,7 +11,7 @@ export class TranslationEngine {
   private tasks: Generator<Node>[] = [];
   private timer: ReturnType<typeof setTimeout> | undefined;
   private enabled = false;
-  readonly stats = { visited: 0, writes: 0, batches: 0 };
+  readonly stats = { visited: 0, writes: 0, batches: 0, workMs: 0, maxBatchMs: 0 };
 
   constructor(private document: Document, private adapter: TranslationAdapter) {
     this.observer = new document.defaultView!.MutationObserver(records => {
@@ -22,7 +22,7 @@ export class TranslationEngine {
           for (const node of record.addedNodes) this.pending.add(node);
         } else this.pending.add(record.target);
       }
-      for (const node of this.edits.keys()) if (!node.isConnected) this.edits.delete(node);
+      for (const node of this.edits.keys()) if (!node.isConnected) this.restore(node);
       this.schedule();
     });
   }
@@ -77,6 +77,9 @@ export class TranslationEngine {
       else if (next.value.isConnected) this.process(next.value);
       if (performance.now() - start >= 8) break;
     }
+    const elapsed = performance.now() - start;
+    this.stats.workMs += elapsed;
+    this.stats.maxBatchMs = Math.max(this.stats.maxBatchMs, elapsed);
     this.schedule();
   }
   private read(node: Node, key: string) { return key === '#text' ? node.nodeValue : (node as Element).getAttribute(key); }
