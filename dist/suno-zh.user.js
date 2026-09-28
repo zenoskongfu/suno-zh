@@ -150,11 +150,234 @@
     }
   };
 
+  // src/dictionary.ts
+  var navigation = {
+    Explore: "探索",
+    Create: "创作",
+    Library: "资料库",
+    Studio: "工作室",
+    Home: "首页"
+  };
+  var library = {
+    Songs: "歌曲",
+    Playlists: "播放列表",
+    Workspaces: "工作区",
+    Voices: "声音",
+    Lyrics: "歌词",
+    Styles: "风格",
+    Filters: "筛选",
+    Search: "搜索",
+    "Search songs": "搜索歌曲",
+    "Search your songs": "搜索你的歌曲",
+    "Search library": "搜索资料库",
+    "Search your library": "搜索你的资料库",
+    "Newest First": "最新优先",
+    "Oldest First": "最早优先",
+    "Newest first": "最新优先",
+    "Oldest first": "最早优先",
+    "Recently Created": "最近创建",
+    "Recently created": "最近创建",
+    "Recently Updated": "最近更新",
+    "Create Playlist": "创建播放列表",
+    "Create playlist": "创建播放列表",
+    "New Playlist": "新建播放列表",
+    "New playlist": "新建播放列表",
+    "New Workspace": "新建工作区",
+    "New workspace": "新建工作区",
+    "My Workspace": "我的工作区",
+    "My Workspaces": "我的工作区",
+    "All Songs": "全部歌曲",
+    "All songs": "全部歌曲"
+  };
+  var creation = {
+    Simple: "简单",
+    Advanced: "高级",
+    Sounds: "音效",
+    Custom: "自定义",
+    Lyrics: "歌词",
+    Styles: "风格",
+    "More Options": "更多选项",
+    "More options": "更多选项",
+    "Advanced Options": "高级选项",
+    "Advanced options": "高级选项",
+    "Song Description": "歌曲描述",
+    "Song description": "歌曲描述",
+    "Song Title": "歌曲标题",
+    "Song title": "歌曲标题",
+    Title: "标题",
+    "Vocal Gender": "人声性别",
+    "Vocal gender": "人声性别",
+    Male: "男声",
+    Female: "女声",
+    Duration: "时长",
+    "Max Mode": "Max 模式",
+    Weirdness: "实验程度",
+    "Style Influence": "风格影响力",
+    "Style influence": "风格影响力",
+    Variety: "多样性",
+    Personalize: "个性化",
+    Instrumental: "纯音乐",
+    "Auto Lyrics": "自动歌词",
+    "Write Lyrics": "写歌词",
+    "Write lyrics": "写歌词",
+    "Add Lyrics": "添加歌词",
+    "Add lyrics": "添加歌词",
+    "Add Styles": "添加风格",
+    "Add styles": "添加风格",
+    "Exclude Styles": "排除风格",
+    "Exclude styles": "排除风格",
+    "Audio Influence": "音频影响力",
+    Create: "创作",
+    "Upload Audio": "上传音频",
+    "Upload audio": "上传音频",
+    "Add Audio": "添加音频",
+    "Add audio": "添加音频",
+    "Add Persona": "添加角色",
+    "Save to": "保存到",
+    "Song Settings": "歌曲设置",
+    "Clear All": "全部清除"
+  };
+  var filters = {
+    Filters: "筛选",
+    Liked: "已喜欢",
+    Disliked: "不喜欢",
+    Public: "公开",
+    Private: "私密",
+    Uploads: "已上传",
+    "Full song": "完整歌曲",
+    "Full Song": "完整歌曲",
+    Cover: "翻唱",
+    Voices: "声音",
+    Downloads: "下载",
+    "Hide Disliked": "隐藏不喜欢的歌曲",
+    "Hide Stems": "隐藏分轨",
+    "Hide disliked": "隐藏不喜欢的歌曲",
+    "Hide stems": "隐藏分轨",
+    "Clear Filters": "清除筛选",
+    "Clear filters": "清除筛选",
+    Reset: "重置",
+    Apply: "应用",
+    All: "全部"
+  };
+  var menus = {
+    Publish: "发布",
+    Manage: "管理",
+    Share: "分享",
+    "Add to Queue": "加入播放队列",
+    "Add to queue": "加入播放队列",
+    "Add to Playlist": "加入播放列表",
+    "Add to playlist": "加入播放列表",
+    "Song Radio": "歌曲电台",
+    Report: "举报",
+    Download: "下载",
+    Edit: "编辑",
+    "Edit Song Details": "编辑歌曲信息",
+    Rename: "重命名",
+    "Move to Workspace": "移至工作区",
+    "Move to workspace": "移至工作区",
+    "Move to Trash": "移至回收站",
+    "Move to trash": "移至回收站",
+    "Copy Link": "复制链接",
+    "Copy link": "复制链接",
+    "Get Stems": "获取分轨",
+    "Remix / Edit": "混音 / 编辑",
+    Remix: "混音",
+    Extend: "续写",
+    "Reuse Prompt": "复用提示词",
+    "Create Cover": "创建翻唱",
+    "Make Public": "设为公开",
+    "Make Private": "设为私密"
+  };
+  var dialogs = {
+    Cancel: "取消",
+    Save: "保存",
+    Close: "关闭",
+    Done: "完成",
+    Confirm: "确认",
+    "Copy Link": "复制链接",
+    "Copy link": "复制链接",
+    "Create Playlist": "创建播放列表",
+    "Create playlist": "创建播放列表",
+    "New Playlist": "新建播放列表",
+    "Add to Playlist": "加入播放列表",
+    "Move to Workspace": "移至工作区",
+    Share: "分享",
+    Download: "下载"
+  };
+  function lookup(dictionary, value) {
+    const trimmed = value.trim().replace(/\s+/g, " ");
+    const translated = dictionary[trimmed];
+    if (typeof translated !== "string" || !Object.hasOwn(dictionary, trimmed)) return;
+    return value.replace(value.trim(), translated);
+  }
+
   // src/adapter.ts
+  var protectedSelector = 'script,style,noscript,textarea,pre,code,[contenteditable]:not([contenteditable="false"]),.clip-title-wrapper,a[href^="/song/"],a[href^="/s/"],a[href^="/@"],a[href^="/playlist/"],a[href^="/workspace/"],[data-testid*="song-title"],[data-testid*="song-card"],[data-testid*="song-row"]';
+  var actionSelector = 'button,[role="button"],[role="tab"],[role="option"],[role="menuitem"],label,h1,h2,h3';
+  var canonicalRoutes = /* @__PURE__ */ new Set(["/discover", "/create", "/me", "/studio"]);
+  function isAction(element) {
+    return Boolean(element.closest(actionSelector));
+  }
+  function onPage(element, path) {
+    return element.ownerDocument.location.pathname === path;
+  }
+  var createRoots = /* @__PURE__ */ new WeakMap();
+  function inCreateForm(element) {
+    const cached = createRoots.get(element.ownerDocument);
+    if (cached?.modes.isConnected && cached.root.contains(cached.modes)) return cached.root.contains(element);
+    const modes = element.ownerDocument.querySelector('[role="tablist"][aria-label="Create form mode"]');
+    for (let root = modes?.parentElement; root && root !== element.ownerDocument.body; root = root.parentElement) {
+      if (root.querySelector('[aria-label="Lyrics editor"], [data-testid="create-form-styles-wrapper"],textarea')) {
+        createRoots.set(element.ownerDocument, { modes, root });
+        return root.contains(element);
+      }
+    }
+    return false;
+  }
+  function filterPopup(element) {
+    const popup = element.closest('[role="listbox"]');
+    if (!popup?.id) return false;
+    return [...element.ownerDocument.querySelectorAll('button[role="combobox"][aria-label^="Filters"]')].some((button) => button.getAttribute("aria-controls") === popup.id);
+  }
+  function contextMenuAction(element) {
+    return element.closest('.context-menu-item > button[aria-label], [role="menuitem"]');
+  }
+  function selectDictionary(element) {
+    const link = element.closest("a[href]");
+    if (link && canonicalRoutes.has(link.getAttribute("href"))) {
+      if (link.matches('[role="tab"]')) return library;
+      return navigation;
+    }
+    if (element.closest('[role="tablist"] a[role="tab"]') && onPage(element, "/me")) return library;
+    if (filterPopup(element)) return filters;
+    if (contextMenuAction(element)) return menus;
+    if (element.closest('[role="dialog"]') && isAction(element)) return dialogs;
+    if (onPage(element, "/create") && inCreateForm(element)) return creation;
+    if (onPage(element, "/me") && isAction(element)) return library;
+  }
   var sunoAdapter = {
-    isProtected: (el) => Boolean(el.closest('script,style,noscript,textarea,[contenteditable]:not([contenteditable="false"])')),
-    text: () => void 0,
-    attribute: () => void 0
+    isProtected(element) {
+      if (contextMenuAction(element) && !element.closest('[contenteditable]:not([contenteditable="false"])')) return false;
+      return Boolean(element.closest(protectedSelector));
+    },
+    text(node, source) {
+      const element = node.parentElement;
+      if (!element) return;
+      const dict = selectDictionary(element);
+      if (!dict) return;
+      const direct = lookup(dict, source);
+      if (direct) return direct;
+      if (dict === library && element.closest('button[role="combobox"][aria-label^="Filters"]')) {
+        return source.replace(/^Filters(?=\s*\(\d+\)$)/, "筛选") === source ? void 0 : source.replace(/^Filters(?=\s*\(\d+\)$)/, "筛选");
+      }
+    },
+    attribute(element, name, source) {
+      if (name === "placeholder" && element.matches("input") && onPage(element, "/me")) return lookup(library, source);
+      if (name === "title" && isAction(element)) {
+        const dict = selectDictionary(element);
+        return dict ? lookup(dict, source) : void 0;
+      }
+    }
   };
 
   // src/userscript.ts
